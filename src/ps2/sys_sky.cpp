@@ -216,15 +216,6 @@ void Sys_SendKeyEvents (void)
 {
 }
 
-// Doesn't matter for non x86, may even completely remove the functions
-void Sys_HighFPPrecision (void)
-{
-}
-
-void Sys_LowFPPrecision (void)
-{
-}
-
 //=============================================================================
 
 int main (int argc, char **argv)
