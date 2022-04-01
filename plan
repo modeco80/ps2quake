@@ -2,7 +2,7 @@ Plan for ps2quake
 
 IMPORTANT:
     - Get quake w. no ASM or platform specific code building with cmake
-    - Get quake running with a null hardware driver
+    - Get quake running with a null driver
     - Get null quake compiling/running on PS2
 
 THEN:

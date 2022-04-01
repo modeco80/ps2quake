@@ -70,7 +70,7 @@ int filelength (FILE *f)
 	return end;
 }
 
-int Sys_FileOpenRead (char *path, int *hndl)
+int Sys_FileOpenRead (const char *path, int *hndl)
 {
 	FILE    *f;
 	int             i;
@@ -89,7 +89,7 @@ int Sys_FileOpenRead (char *path, int *hndl)
 	return filelength(f);
 }
 
-int Sys_FileOpenWrite (char *path)
+int Sys_FileOpenWrite (const char *path)
 {
 	FILE    *f;
 	int             i;
@@ -122,10 +122,11 @@ int Sys_FileRead (int handle, void *dest, int count)
 
 int Sys_FileWrite (int handle, void *data, int count)
 {
-	return fwrite (data, 1, count, sys_handles[handle]);
+	return -1; // No-op. Leaving original code here just in case we wanna reenable.
+	//return fwrite (data, 1, count, sys_handles[handle]);
 }
 
-int     Sys_FileTime (char *path)
+int     Sys_FileTime (const char *path)
 {
 	FILE    *f;
 	
@@ -139,7 +140,7 @@ int     Sys_FileTime (char *path)
 	return -1;
 }
 
-void Sys_mkdir (char *path)
+void Sys_mkdir (const char *path)
 {
 }
 
@@ -159,7 +160,7 @@ void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 }
 
 
-void Sys_Error (char *error, ...)
+void Sys_Error (const char *error, ...)
 {
 	va_list         argptr;
 
@@ -173,7 +174,7 @@ void Sys_Error (char *error, ...)
 	exit (1);
 }
 
-void Sys_Printf (char *fmt, ...)
+void Sys_Printf (const char *fmt, ...)
 {
 	va_list         argptr;
 	
@@ -184,7 +185,7 @@ void Sys_Printf (char *fmt, ...)
 
 void Sys_Quit (void)
 {
-	exit (0);
+	exit(0);
 }
 
 // TODO: We can probably use either the EE timers
@@ -228,8 +229,12 @@ void Sys_LowFPPrecision (void)
 
 int main (int argc, char **argv)
 {
-	static quakeparms_t    parms;
+	quakeparms_t parms;
 
+	// ?: Realistically, we could probably go without calling malloc at all
+	// since the ee kernel pretty much gives us full reign of the heap.
+	// However if some libc function calls malloc internally then that risks
+	// memory corruption. So malloc()'s fine for now.
 	parms.memsize = 8*1024*1024;
 	parms.membase = malloc (parms.memsize);
 	parms.basedir = ".";
@@ -242,6 +247,8 @@ int main (int argc, char **argv)
 	printf ("Host_Init\n");
 	Host_Init (&parms);
 
+	// TODO: We'll need to use aforementioned timer code to pace the game loop
+	// properly.
 	while (true)
 	{
 		Host_Frame (0.1);
