@@ -18,9 +18,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// sys_sky.c - PS2 system driver
+// sys_sky.cpp - PS2 system driver
 
-// HACK for now. Headers should get c guards later
+// HACK for now. Headers should get c/inclusion guards later
 extern "C" {
 #include "quakedef.h"
 #include "errno.h"
@@ -41,14 +41,12 @@ FILE IO
 #define MAX_HANDLES             10
 FILE    *sys_handles[MAX_HANDLES];
 
-int             findhandle (void)
-{
-	int             i;
-	
-	for (i=1 ; i<MAX_HANDLES ; i++)
+// Allocate a file handle. Returns it.
+int alloc_handle() {
+	for (int i = 1; i < MAX_HANDLES; i++)
 		if (!sys_handles[i])
 			return i;
-	Sys_Error ("out of handles");
+	Sys_Error ("out of free file handles");
 	return -1;
 }
 
@@ -75,7 +73,7 @@ int Sys_FileOpenRead (const char *path, int *hndl)
 	FILE    *f;
 	int             i;
 	
-	i = findhandle ();
+	i = alloc_handle();
 
 	f = fopen(path, "rb");
 	if (!f)
@@ -94,7 +92,7 @@ int Sys_FileOpenWrite (const char *path)
 	FILE    *f;
 	int             i;
 	
-	i = findhandle ();
+	i = alloc_handle();
 
 	f = fopen(path, "wb");
 	if (!f)
@@ -104,10 +102,17 @@ int Sys_FileOpenWrite (const char *path)
 	return i;
 }
 
-void Sys_FileClose (int handle)
+void Sys_FileClose(int handle)
 {
-	fclose (sys_handles[handle]);
-	sys_handles[handle] = NULL;
+	if(handle < 1 || handle > MAX_HANDLES)
+		Sys_Error("Sys_FileClose: invalid file handle");
+
+	if(sys_handles[handle] != nullptr) {
+		fclose(sys_handles[handle]);
+		sys_handles[handle] = NULL;
+	} else {
+		Sys_Error("Sys_FileClose: trying to close a non-existant file handle");
+	}
 }
 
 void Sys_FileSeek (int handle, int position)
@@ -153,14 +158,7 @@ SYSTEM IO
 ===============================================================================
 */
 
-// No-op on ps2, as the EE kernel has no semblance of memory protection besides
-// kernel and user memory
-void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
-{
-}
-
-
-void Sys_Error (const char *error, ...)
+void Sys_Error(const char *error, ...)
 {
 	va_list         argptr;
 
@@ -174,7 +172,7 @@ void Sys_Error (const char *error, ...)
 	exit (1);
 }
 
-void Sys_Printf (const char *fmt, ...)
+void Sys_Printf(const char *fmt, ...)
 {
 	va_list         argptr;
 	
@@ -183,14 +181,14 @@ void Sys_Printf (const char *fmt, ...)
 	va_end (argptr);
 }
 
-void Sys_Quit (void)
+void Sys_Quit()
 {
 	exit(0);
 }
 
 // TODO: We can probably use either the EE timers
-// or performance timer.
-double Sys_FloatTime (void)
+// or the performance timer to get elapsed delta time.
+double Sys_FloatTime()
 {
 	static double t;
 	
@@ -199,24 +197,26 @@ double Sys_FloatTime (void)
 	return t;
 }
 
-// TODO: is this for egg
-char *Sys_ConsoleInput (void)
+// Seems to be for DS stdin.
+// Don't need that right now.
+char *Sys_ConsoleInput()
 {
 	return NULL;
 }
 
 // TODO: When the engine calls this if we are multithreading
 // we should maybe begin trying to yield to other threads? Dunno
-void Sys_Sleep (void)
+void Sys_Sleep()
 {
 }
 
 // Where we could probably hack-in
-void Sys_SendKeyEvents (void)
+void Sys_SendKeyEvents()
 {
 }
 
-//=============================================================================
+}
+
 
 int main (int argc, char **argv)
 {
@@ -247,6 +247,3 @@ int main (int argc, char **argv)
 
 	return 0;
 }
-
-}
-
