@@ -1,0 +1,17 @@
+Plan for ps2quake
+
+IMPORTANT:
+    - Get glquakeworld building with cmake
+    - Get glquakeworld running with a null render driver
+    - Get null glquakeworld compiling/running on PS2
+
+THEN:
+    - Add sys file for ps2
+    - Work on basic PS2 VU1 debug renderer
+    - Optimize code using vectors using vu0 in macro mode
+    - Switch out debug renderer for optimized vu1 code for all scenarios:
+        - solid models
+        - transparent models (water...)
+        - particles
+    - Begin work on pad input (could be easily hacked in ps2/sys_sky.c)
+
