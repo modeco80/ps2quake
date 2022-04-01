@@ -37,6 +37,10 @@ static float	basemip[NUM_MIPS-1] = {1.0, 0.5*0.8, 0.25*0.8};
 
 extern int			d_aflatcolor;
 
+//fixed16_t	sadjust, tadjust;
+//fixed16_t	bbextents, bbextentt;
+void (*prealspandrawer)(void);
+
 void (*d_drawspans) (espan_t *pspan);
 
 

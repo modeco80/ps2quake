@@ -242,6 +242,7 @@ typedef struct
 #include "progs.h"
 #include "server.h"
 
+// todo: ps2quake renderer
 #ifdef GLQUAKE
 #include "gl_model.h"
 #else
