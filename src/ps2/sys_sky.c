@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1996-1997 Id Software, Inc.
+Copyright (C) 2022 Lily <lily.modeco80@protonmail.ch>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// sys_null.h -- null system driver to aid porting efforts
+// sys_sky.c - PS2 system driver
 
 #include "quakedef.h"
 #include "errno.h"
@@ -146,6 +147,8 @@ SYSTEM IO
 ===============================================================================
 */
 
+// No-op on ps2, as the EE kernel has no semblance of memory protection besides
+// kernel and user memory
 void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 {
 }
@@ -155,6 +158,7 @@ void Sys_Error (char *error, ...)
 {
 	va_list         argptr;
 
+	// TODO: Probably put up a primitive or draw directly on fb without clearing
 	printf ("Sys_Error: ");   
 	va_start (argptr,error);
 	vprintf (error,argptr);
@@ -187,19 +191,24 @@ double Sys_FloatTime (void)
 	return t;
 }
 
+// TODO: is this for egg
 char *Sys_ConsoleInput (void)
 {
 	return NULL;
 }
 
+// TODO: When the engine calls this if we are multithreading
+// we should maybe begin trying to yield to other threads? Dunno
 void Sys_Sleep (void)
 {
 }
 
+// Where we could probably hack-in
 void Sys_SendKeyEvents (void)
 {
 }
 
+// Doesn't matter for non x86, may even completely remove the functions
 void Sys_HighFPPrecision (void)
 {
 }
@@ -210,7 +219,7 @@ void Sys_LowFPPrecision (void)
 
 //=============================================================================
 
-void main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	static quakeparms_t    parms;
 
@@ -225,10 +234,13 @@ void main (int argc, char **argv)
 
 	printf ("Host_Init\n");
 	Host_Init (&parms);
-	while (1)
+
+	while (true)
 	{
 		Host_Frame (0.1);
 	}
+
+	return 0;
 }
 
 
