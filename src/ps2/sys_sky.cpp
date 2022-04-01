@@ -20,8 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // sys_sky.c - PS2 system driver
 
+// HACK for now. Headers should get c guards later
+extern "C" {
 #include "quakedef.h"
 #include "errno.h"
+}
+
+extern "C" {
 
 qboolean isDedicated;
 
@@ -182,6 +187,8 @@ void Sys_Quit (void)
 	exit (0);
 }
 
+// TODO: We can probably use either the EE timers
+// or performance timer.
 double Sys_FloatTime (void)
 {
 	static double t;
@@ -243,4 +250,5 @@ int main (int argc, char **argv)
 	return 0;
 }
 
+}
 

@@ -1,5 +1,4 @@
 add_executable(quake
-	ps2/cd_sky.c
 	chase.c
 	cl_demo.c
 	cl_input.c
@@ -26,7 +25,6 @@ add_executable(quake
 	d_zpoint.c
 	host.c
 	host_cmd.c
-	ps2/in_sky.c
 	keys.c
 	mathlib.c
 	menu.c
@@ -64,12 +62,17 @@ add_executable(quake
 	sv_phys.c
 	sv_user.c
 
-	ps2/sys_sky.c
-	ps2/vid_sky.c
 	view.c
 	wad.c
 	world.c
 	zone.c
+
+	# System specific code
+	ps2/sys_sky.cpp
+	ps2/cd_sky.c
+	ps2/vid_sky.c
+	ps2/in_sky.c
+	snd_null.c
 	)
 
 target_include_directories(quake PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
