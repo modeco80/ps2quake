@@ -80,4 +80,4 @@ add_executable(quake
 
 target_include_directories(quake PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(quake PRIVATE m stuff)
+target_link_libraries(quake PRIVATE m stuff audsrv)

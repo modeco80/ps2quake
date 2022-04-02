@@ -92,7 +92,7 @@ struct QuakeGameLoop {
 		// TODO: We'll need to use aforementioned timer code to pace the game loop
 		// properly.
 		// It should be members of GameLoop.
-		Host_Frame(0.1);
+		Host_Frame(0.5);
 	}
 
 	bool shouldExit { false };
@@ -299,12 +299,16 @@ void LoadIOPModules() {
 	// SifLoadFileInit();
 
 	// Load ROM IOP modules.
+	// TODO: load PS2SDK versions of these modules
 	SifLoadModule("rom0:SIO2MAN", 0, nullptr);
 	SifLoadModule("rom0:MCMAN", 0, nullptr);
 	SifLoadModule("rom0:MCSERV", 0, nullptr);
 	SifLoadModule("rom0:PADMAN", 0, nullptr);
 
-	// TODO: load PS2SDK modules
+	// Sound IOP modules
+	SifLoadModule("rom0:LIBSD", 0, nullptr);
+	SifLoadModule("host:modules/audsrv.irx", 0, nullptr);
+
 }
 
 int main(int argc, char** argv) {
