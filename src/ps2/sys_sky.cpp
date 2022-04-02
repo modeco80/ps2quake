@@ -33,6 +33,7 @@ extern "C" {
 #include <kernel.h>
 #include <loadfile.h>
 #include <sifrpc.h>
+#include <sio.h>
 
 
 /** *The* game loop instance. */
@@ -72,9 +73,9 @@ struct QuakeGameLoop {
         parms.argc = com_argc;
         parms.argv = com_argv;
 
-        printf ("QuakeGameLoop::Init: Quake Host_Init\n");
+        Sys_Printf ("QuakeGameLoop::Init: Quake Host_Init\n");
         Host_Init (&parms);
-        printf ("QuakeGameLoop::Init: Quake Host_Init done\n");
+        Sys_Printf ("QuakeGameLoop::Init: Quake Host_Init done\n");
 
         return true;
     }
@@ -239,16 +240,25 @@ SYSTEM IO
 ===============================================================================
 */
 
+
+void Sys_Vprintf(const char* fmt, va_list val) {
+    static char buffer[2048];
+    vsnprintf(buffer, 2048, fmt, val);
+    sio_putsn(buffer);
+}
+
+
 void Sys_Error(const char *error, ...)
 {
 	va_list         argptr;
 
 	// TODO: Probably put up a primitive or draw directly on fb without clearing
-	printf ("Sys_Error: ");   
+    Sys_Printf ("Sys_Error: ");
 	va_start (argptr,error);
-	vprintf (error,argptr);
+    Sys_Vprintf (error,argptr);
 	va_end (argptr);
-	printf ("\n");
+    Sys_Printf ("\n");
+
 
     // Spin so someone with a debugger can see:
     while(1);
@@ -260,9 +270,12 @@ void Sys_Error(const char *error, ...)
 void Sys_Printf(const char *fmt, ...)
 {
 	va_list         argptr;
-	
+
+    static char buffer[2048];
+
 	va_start (argptr,fmt);
-	vprintf (fmt,argptr);
+	//vprintf (fmt,argptr);
+    Sys_Vprintf(fmt, argptr);
 	va_end (argptr);
 }
 
