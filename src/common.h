@@ -27,13 +27,14 @@ typedef unsigned char byte;
 #undef true
 #undef false
 
+// Unified boolean type between C/C++.
+// _Bool and bool are both sizeof(unsigned char) so code's compatible between each other.
 #ifdef __cplusplus
 typedef bool qboolean;
 #else
-// TODO: should maybe just allow byte = boolean
-// or use c99 bool.
-typedef enum { false,
-			   true } qboolean;
+enum { false,
+	   true };
+typedef _Bool qboolean;
 #endif
 
 //============================================================================

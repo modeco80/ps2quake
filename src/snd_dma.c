@@ -274,7 +274,7 @@ S_FindName
 
 ==================
 */
-sfx_t *S_FindName (char *name)
+sfx_t *S_FindName (const char *name)
 {
 	int		i;
 	sfx_t	*sfx;

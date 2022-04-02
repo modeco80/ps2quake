@@ -16,9 +16,13 @@ UseTab: Always
 IndentPPDirectives: BeforeHash
 
 AllowAllParametersOfDeclarationOnNextLine: true
-AllowShortBlocksOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
+
+AllowShortEnumsOnASingleLine: true
+BraceWrapping:
+  AfterEnum:  false
 
 BinPackArguments: true
 BinPackParameters: true
