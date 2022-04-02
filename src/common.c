@@ -222,7 +222,7 @@ void Q_strcat (char *dest, char *src)
 	Q_strcpy (dest, src);
 }
 
-int Q_strcmp (char *s1, char *s2)
+int Q_strcmp (const char *s1, const char *s2)
 {
 	while (1)
 	{
@@ -987,7 +987,7 @@ Returns the position (1 to argc-1) in the program's argument list
 where the given parameter apears, or 0 if not present
 ================
 */
-int COM_CheckParm (char *parm)
+int COM_CheckParm (const char *parm)
 {
 	int             i;
 	
@@ -1122,7 +1122,7 @@ void COM_InitArgv (int argc, char **argv)
 COM_Init
 ================
 */
-void COM_Init (char *basedir)
+void COM_Init (const char *basedir)
 {
 	byte    swaptest[2] = {1,0};
 

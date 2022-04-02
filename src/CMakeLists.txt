@@ -1,4 +1,5 @@
 add_executable(quake
+	# Quake platform-independent source code
 	chase.c
 	cl_demo.c
 	cl_input.c
@@ -53,10 +54,6 @@ add_executable(quake
 	r_vars.c
 	sbar.c
 	screen.c
-	#	snd_dma.c
-	#snd_mem.c
-	#snd_mix.c
-	snd_null.c
 	sv_main.c
 	sv_move.c
 	sv_phys.c
@@ -69,10 +66,14 @@ add_executable(quake
 
 	# System specific code
 	ps2/sys_sky.cpp
+	ps2/snd_sky.c
 	ps2/cd_sky.c
 	ps2/vid_sky.c
 	ps2/in_sky.c
-	snd_null.c
+
+	#	snd_dma.c
+	#snd_mem.c
+	#snd_mix.c
 	)
 
 target_include_directories(quake PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

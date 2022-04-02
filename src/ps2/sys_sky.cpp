@@ -23,11 +23,92 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // HACK for now. Headers should get c/inclusion guards later
 extern "C" {
 #include "quakedef.h"
-#include "errno.h"
 }
+
+//#include <errno.h>
+
+// PS2SDK
+#include <iopcontrol.h>
+#include <iopheap.h>
+#include <kernel.h>
+#include <loadfile.h>
+#include <sifrpc.h>
+
+
+/** *The* game loop instance. */
+static struct QuakeGameLoop* gGameLoop;
+
+/**
+ * This class controls the Quake gameloop
+ * TODO: implement in another file
+ */
+struct QuakeGameLoop {
+
+    QuakeGameLoop() {
+        gGameLoop = this;
+    }
+
+    ~QuakeGameLoop() {
+        gGameLoop = nullptr;
+    }
+
+    bool Init(int argc, char** argv) {
+        quakeparms_t parms;
+
+        // ?: Realistically, we could probably go without calling malloc at all
+        // since the ee kernel pretty much gives us full reign of the memory except for like 1mb.
+        // However if some libc function calls malloc internally then that risks
+        // memory corruption. So malloc()'s fine for now.
+        parms.memsize = 8*1024*1024;
+        parms.membase = malloc (parms.memsize);
+
+        if(!parms.membase)
+            return false;
+
+        parms.basedir = ".";
+
+        COM_InitArgv (argc, argv);
+
+        parms.argc = com_argc;
+        parms.argv = com_argv;
+
+        printf ("QuakeGameLoop::Init: Quake Host_Init\n");
+        Host_Init (&parms);
+        printf ("QuakeGameLoop::Init: Quake Host_Init done\n");
+
+        return true;
+    }
+
+    void DoUntilExit() {
+        while(!shouldExit) {
+            DoOne();
+        }
+    }
+
+    void PostExit() {
+        if(!shouldExit)
+            shouldExit = true;
+    }
+
+private:
+
+    /**
+     * Do one iteration of the gameloop.
+     */
+    void DoOne() {
+        // TODO: We'll need to use aforementioned timer code to pace the game loop
+        // properly.
+        // It should be members of GameLoop.
+        Host_Frame(0.1);
+    }
+
+    bool shouldExit{false};
+};
+
 
 extern "C" {
 
+// For some reason this is needed.
 qboolean isDedicated;
 
 /*
@@ -37,7 +118,7 @@ FILE IO
 
 ===============================================================================
 */
-
+// TODO: this could totally be made better.
 #define MAX_HANDLES             10
 FILE    *sys_handles[MAX_HANDLES];
 
@@ -169,7 +250,11 @@ void Sys_Error(const char *error, ...)
 	va_end (argptr);
 	printf ("\n");
 
-	exit (1);
+    // Spin so someone with a debugger can see:
+    while(1);
+
+    // exit fast
+	//exit (1);
 }
 
 void Sys_Printf(const char *fmt, ...)
@@ -183,7 +268,11 @@ void Sys_Printf(const char *fmt, ...)
 
 void Sys_Quit()
 {
-	exit(0);
+    if(!gGameLoop)
+        Sys_Error("no gameloop instance? how's that work");
+
+    // Tell the gameloop nicely to stop iterating
+    gGameLoop->PostExit();
 }
 
 // TODO: We can probably use either the EE timers
@@ -204,12 +293,6 @@ char *Sys_ConsoleInput()
 	return NULL;
 }
 
-// TODO: When the engine calls this if we are multithreading
-// we should maybe begin trying to yield to other threads? Dunno
-void Sys_Sleep()
-{
-}
-
 // Where we could probably hack-in
 void Sys_SendKeyEvents()
 {
@@ -217,33 +300,48 @@ void Sys_SendKeyEvents()
 
 }
 
+void ResetIOP() {
+    SifInitRpc(0);
+
+    while(!SifIopReset("", 0))
+        ;
+    while(!SifIopSync())
+        ;
+
+    SifInitRpc(0);
+}
+
+void LoadIOPModules() {
+    ResetIOP();
+    SifInitIopHeap();
+    //SifLoadFileInit();
+
+    // Load ROM IOP modules.
+    SifLoadModule("rom0:SIO2MAN", 0, nullptr);
+    SifLoadModule("rom0:MCMAN", 0, nullptr);
+    SifLoadModule("rom0:MCSERV", 0, nullptr);
+    SifLoadModule("rom0:PADMAN", 0, nullptr);
+
+}
 
 int main (int argc, char **argv)
 {
-	quakeparms_t parms;
+    QuakeGameLoop gameLoop;
 
-	// ?: Realistically, we could probably go without calling malloc at all
-	// since the ee kernel pretty much gives us full reign of the heap.
-	// However if some libc function calls malloc internally then that risks
-	// memory corruption. So malloc()'s fine for now.
-	parms.memsize = 8*1024*1024;
-	parms.membase = malloc (parms.memsize);
-	parms.basedir = ".";
+    // Reset IOP and load modules
+    // Should we do this in QuakeGameLoop?
+    ResetIOP();
+    LoadIOPModules();
 
-	COM_InitArgv (argc, argv);
+    if(!gameLoop.Init(argc, argv))
+        Sys_Error("Could not initalize Quake engine");
 
-	parms.argc = com_argc;
-	parms.argv = com_argv;
+    // Start kicking off the game loop
+    gameLoop.DoUntilExit();
 
-	printf ("Host_Init\n");
-	Host_Init (&parms);
-
-	// TODO: We'll need to use aforementioned timer code to pace the game loop
-	// properly.
-	while (true)
-	{
-		Host_Frame (0.1);
-	}
+    // If we get here, the gameloop was posted to exit.
+    // Sys_Exit() is called when all game services have also went away,
+    // so we can just return!
 
 	return 0;
 }
