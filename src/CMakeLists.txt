@@ -1,3 +1,5 @@
+add_subdirectory(ps2/stuff)
+
 add_executable(quake
 	# Quake platform-independent source code
 	chase.c
@@ -64,12 +66,12 @@ add_executable(quake
 	world.c
 	zone.c
 
-	# System specific code
+	# System specific Quake code
 	ps2/sys_sky.cpp
-	ps2/snd_sky.c
-	ps2/cd_sky.c
-	ps2/vid_sky.c
-	ps2/in_sky.c
+	ps2/snd_sky.cpp
+	ps2/cd_sky.cpp
+	ps2/vid_sky.cpp
+	ps2/in_sky.cpp
 
 	#	snd_dma.c
 	#snd_mem.c
@@ -78,4 +80,4 @@ add_executable(quake
 
 target_include_directories(quake PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(quake PRIVATE m)
+target_link_libraries(quake PRIVATE m stuff)

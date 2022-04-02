@@ -19,6 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // d_iface.h: interface header file for rasterization driver modules
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define WARP_WIDTH		320
 #define WARP_HEIGHT		200
 
@@ -91,7 +95,7 @@ typedef struct {
 typedef struct
 {
 	int			nump;
-	emitpoint_t	*pverts;	// there's room for an extra element at [nump], 
+	emitpoint_t	*pverts;	// there's room for an extra element at [nump],
 							//  if the driver wants to duplicate element [0] at
 							//  element [nump] to avoid dealing with wrapping
 	mspriteframe_t	*pspriteframe;
@@ -121,7 +125,7 @@ extern qboolean	r_recursiveaffinetriangles;	// true if a driver wants to use
 											//  recursive triangular subdivison
 											//  and vertex drawing via
 											//  D_PolysetDrawFinalVerts() past
-											//  a certain distance (normally 
+											//  a certain distance (normally
 											//  only used by the software
 											//  driver)
 extern float	r_aliasuvscale;		// scale-up factor for screen u and v
@@ -227,3 +231,6 @@ extern vrect_t	scr_vrect;
 
 extern byte		*r_warpbuffer;
 
+#ifdef __cplusplus
+}
+#endif

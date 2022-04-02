@@ -19,6 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // sys.h -- non-portable functions
 
+#ifdef __GNUC__
+#define SYS_NORETURN __attribute__((noreturn))
+#else
+#define SYS_NORETURN
+#endif
+
 //
 // file IO
 //
@@ -41,13 +47,13 @@ void Sys_mkdir (const char *path);
 //
 void Sys_DebugLog(const char *file, const char *fmt, ...);
 
-void Sys_Error (const char *error, ...);
+SYS_NORETURN void Sys_Error (const char *error, ...);
 // an error will cause the entire program to exit
 
 void Sys_Printf (const char *fmt, ...);
 // send text to the console
 
-// TODO: Mark this with noreturn?
+// Quit. Called once all other game subsystems have shut down.
 void Sys_Quit();
 
 double Sys_FloatTime();

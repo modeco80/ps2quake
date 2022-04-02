@@ -19,6 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // d_local.h:  private rasterization driver defs
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "r_shared.h"
 
 //
@@ -109,3 +113,6 @@ extern float	d_scalemip[3];
 
 extern void (*d_drawspans) (espan_t *pspan);
 
+#ifdef __cplusplus
+}
+#endif
