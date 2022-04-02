@@ -17,64 +17,38 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// snd_null.c -- include this instead of all the other snd_* files to have
-// no sound code whatsoever
+// snd_sky.cpp: null driver for SNDDMA
 
 // TODO: SPU2, streaming redbook, all that.
 
 #include "quakedef.h"
 
-cvar_t bgmvolume = { "bgmvolume", "1", true };
-cvar_t volume = { "volume", "0.7", true };
+int snd_inited;
 
-void S_Init(void) {
+
+qboolean SNDDMA_Init() {
+	snd_inited = true;
+	return true;
 }
 
-void S_AmbientOff(void) {
+int SNDDMA_GetDMAPos() {
+	return 0;
 }
 
-void S_AmbientOn(void) {
+void SNDDMA_Shutdown(void)
+{
+	if (snd_inited)
+	{
+		snd_inited = false;
+	}
 }
 
-void S_Shutdown(void) {
-}
-
-void S_TouchSound(char* sample) {
-}
-
-void S_ClearBuffer(void) {
-}
-
-void S_StaticSound(sfx_t* sfx, vec3_t origin, float vol, float attenuation) {
-}
-
-void S_StartSound(int entnum, int entchannel, sfx_t* sfx, vec3_t origin, float fvol, float attenuation) {
-}
-
-void S_StopSound(int entnum, int entchannel) {
-}
-
-sfx_t* S_PrecacheSound(char* sample) {
-	return NULL;
-}
-
-void S_ClearPrecache(void) {
-}
-
-void S_Update(vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up) {
-}
-
-void S_StopAllSounds(qboolean clear) {
-}
-
-void S_BeginPrecaching(void) {
-}
-
-void S_EndPrecaching(void) {
-}
-
-void S_ExtraUpdate(void) {
-}
-
-void S_LocalSound(char* s) {
+/*
+==============
+SNDDMA_Submit
+Send sound to device if buffer isn't really the dma buffer
+===============
+*/
+void SNDDMA_Submit(void)
+{
 }

@@ -73,9 +73,9 @@ add_executable(quake
 	ps2/vid_sky.cpp
 	ps2/in_sky.cpp
 
-	#	snd_dma.c
-	#snd_mem.c
-	#snd_mix.c
+	snd_dma.c
+	snd_mem.c
+	snd_mix.c
 	)
 
 target_include_directories(quake PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
