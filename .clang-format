@@ -54,7 +54,8 @@ FixNamespaceComments: true
 NamespaceIndentation: All
 ReflowComments: true
 
-SortIncludes: CaseInsensitive
+#SortIncludes: CaseInsensitive
+SortIncludes: Never
 SortUsingDeclarations: true
 
 
